@@ -1,0 +1,35 @@
+apiVersion: networking.mesh.gloo.solo.io/v1
+kind: VirtualMesh
+metadata:
+  name: {{ .Values.virtualMesh.name | default "virtual-mesh" }}
+  namespace: gloo-mesh
+
+spec:
+  {{- if .Values.virtualMesh.global.defaultDenyAccessPolicy }}
+    globalAccessPolicy: ENABLED
+  {{- end }}
+  federation:                            # Enable automatic federation of all services to all clusters
+    selectors:
+      - {}
+  {{- if .Values.virtualMesh.global.tcpKeepAlive.enabled }}
+    tcpKeepalive:
+      time: 4m
+      interval: 1m
+  {{- end }}
+    ingressGatewaySelectors:
+{{- with .Values.virtualMesh.eastwestGatewaySelector }}
+    - portName: {{ .portName }}
+      destinationSelectors:
+      - kubeServiceMatcher:
+          labels:
+{{ .labels | toYaml | indent 12}}
+          namespaces:
+          {{- range .namespaces }}
+          - {{ . }}
+          {{- end }}
+{{- end }}
+  meshes:
+{{- range .Values.clusters }}
+    - name: istiod-istio-system-{{ .name }}
+      namespace: gloo-mesh
+{{- end }}
