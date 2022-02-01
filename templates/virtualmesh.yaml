@@ -1,3 +1,4 @@
+{{- if .Values.virtualMesh.enabled }}
 apiVersion: networking.mesh.gloo.solo.io/v1
 kind: VirtualMesh
 metadata:
@@ -32,4 +33,5 @@ spec:
 {{- range .Values.clusters }}
     - name: istiod-istio-system-{{ .name }}
       namespace: gloo-mesh
+{{- end }}
 {{- end }}
