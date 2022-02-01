@@ -1,3 +1,5 @@
+createKubernetesClusterObjects: false
+
 virtualMesh:
   name: gloo-mesh
   global:
@@ -41,7 +43,7 @@ virtualDestinations:
     selector:
     - match:
         labels:
-          service: frontend
+          app: frontend
 
 trafficPolicies:
 - name: checkout-shift
@@ -87,7 +89,7 @@ accessPolicies:
         namespaces:
         - frontend
         labels:
-          service: frontend
+          app: frontend
   - name: loadgenerator-to-frontend
     sourceServiceAccounts:
     - name: loadgenerator
@@ -101,7 +103,7 @@ accessPolicies:
         namespaces:
         - frontend
         labels:
-          service: frontend
+          app: frontend
   - name: frontend-to-upstreams
     sourceServiceAccounts:
     - name: frontend
@@ -115,42 +117,42 @@ accessPolicies:
         namespaces:
         - frontend
         labels:
-          service: frontend
+          app: frontend
     - match:
         namespaces:
         - currency
         labels:
-          service: currencyservice
+          app: currencyservice
     - match:
         namespaces:
         - shipping
         labels:
-          service: shippingservice
+          app: shippingservice
     - match:
         namespaces:
         - cart
         labels:
-          service: cartservice
+          app: cartservice
     - match:
         namespaces:
         - checkout
         labels:
-          service: checkoutservice
+          app: checkoutservice
     - match:
         namespaces:
         - product-catalog
         labels:
-          service: productcatalogservice
+          app: productcatalogservice
     - match:
         namespaces:
         - recommendation
         labels:
-          service: recommendationservice
+          app: recommendationservice
     - match:
         namespaces:
         - ad
         labels:
-          service: adservice
+          app: adservice
   - name: checkout-to-upstreams
     sourceServiceAccounts:
     - name: checkout
@@ -164,29 +166,29 @@ accessPolicies:
         namespaces:
         - currency
         labels:
-          service: currencyservice
+          app: currencyservice
     - match:
         namespaces:
         - shipping
         labels:
-          service: shippingservice
+          app: shippingservice
     - match:
         namespaces:
         - cart
         labels:
-          service: cartservice
+          app: cartservice
     - match:
         namespaces:
         - payment
         labels:
-          service: paymentservice
+          app: paymentservice
     - match:
         namespaces:
         - email
         labels:
-          service: emailservice
+          app: emailservice
     - match:
         namespaces:
         - product-catalog
         labels:
-          service: productcatalogservice
+          app: productcatalogservice

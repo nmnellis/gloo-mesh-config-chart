@@ -36,10 +36,10 @@ spec:
   {{- range .destinationServices }}
    {{- if .exact }}
     - kubeServiceRefs:
-      - services:
-          name: {{ .exact.name }}
+        services:
+        - name: {{ .exact.name }}
           namespace: {{ .exact.namespace }}
-          cluster:  {{ .exact.cluster }}
+          clusterName:  {{ .exact.cluster }}
     {{- end }}
     {{- if .match }}
     {{- if or (.match.namespaces) (.match.labels) (.match.clusters) }}

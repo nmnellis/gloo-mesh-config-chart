@@ -5,15 +5,17 @@ metadata:
   namespace: gloo-mesh
   name: {{ .name }}
 spec:
+  {{- if .sourceServiceAccounts }}
   sourceSelector:
   - kubeServiceAccountRefs:
       serviceAccounts:
-        - name: istio-ingressgateway-service-account
-          namespace: istio-system
-          clusterName: cluster1
-        - name: istio-ingressgateway-service-account
-          namespace: istio-system
-          clusterName: cluster2
+      {{- range .sourceServiceAccounts}}
+        - name: {{ .name }}
+          namespace: {{ .namespace }}
+          clusterName: {{ .clusterName }}
+      {{- end }}
+  {{- end }}
+  {{- if .destinationServices }}
   destinationSelector:
   {{- range .destinationServices }}
   {{- if .match }}
@@ -43,6 +45,7 @@ spec:
         name: {{ .exact.name }}
         namespace: {{ .exact.namespace }}
         cluster:  {{ .exact.cluster }}
+  {{- end }}
   {{- end }}
   {{- end }}
 ---

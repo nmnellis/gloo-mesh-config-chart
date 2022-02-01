@@ -1,3 +1,4 @@
+{{- if .Values.createKubernetesClusterObjects}}
 {{- range .Values.clusters }}
 apiVersion: multicluster.solo.io/v1alpha1
 kind: KubernetesCluster
@@ -5,4 +6,5 @@ metadata:
   name: {{ .name }}
   namespace: gloo-mesh
 ---
+{{- end }}
 {{- end }}
