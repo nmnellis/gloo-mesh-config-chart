@@ -4,4 +4,5 @@ kind: KubernetesCluster
 metadata:
   name: {{ .name }}
   namespace: gloo-mesh
+---
 {{- end }}

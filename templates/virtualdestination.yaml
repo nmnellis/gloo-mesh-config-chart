@@ -56,4 +56,5 @@ spec:
   virtualMesh:
     name: {{ $.Values.virtualMesh.name }}
     namespace: gloo-mesh
+---
 {{- end }}

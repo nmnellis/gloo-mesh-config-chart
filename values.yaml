@@ -33,9 +33,6 @@ virtualMesh:
 
 clusters:
   # - name: cluster1
-  #   #  istio:
-  #   #    namespace: istio-system
-  #   #    revision: 10-0-2
   # - name: cluster2
 
 virtualDestinations:

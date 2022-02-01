@@ -4,10 +4,9 @@ kind: VirtualMesh
 metadata:
   name: {{ .Values.virtualMesh.name | default "virtual-mesh" }}
   namespace: gloo-mesh
-
 spec:
   {{- if .Values.virtualMesh.global.defaultDenyAccessPolicy }}
-    globalAccessPolicy: ENABLED
+  globalAccessPolicy: ENABLED
   {{- end }}
   federation:                            # Enable automatic federation of all services to all clusters
     selectors:
@@ -34,4 +33,5 @@ spec:
     - name: istiod-istio-system-{{ .name }}
       namespace: gloo-mesh
 {{- end }}
+---
 {{- end }}

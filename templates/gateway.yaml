@@ -45,17 +45,18 @@ spec:
       - virtualHost:
           domains:
           {{- range .domains }}
-          - {{ . }}
+          - {{ . | quote }}
           {{- end }}
           routes:
           {{- range .match }}
           - routeAction:
               destinations:
-{{ .destinations | toYaml | indent 14}}
+{{ .destinations | toYaml | indent 16}}
             {{- if .matches }}
             matchers:
-{{ .matches | toYaml | indent 12}}
+{{ .matches | toYaml | indent 14}}
             {{- end }}
           {{- end }}
       {{- end }}
+---
 {{- end }}
