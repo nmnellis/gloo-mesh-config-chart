@@ -19,13 +19,13 @@ virtualMesh:
       # Restart all service mesh services when Istio CA is rotated
       autoRestartPods: true
       # Optional: Provide your own root CA Certificate
-      customCASecretName: istios-ca
+      customCASecretName: gloo-mesh-istio-ca
   global:
     # Enable default deny to all mesh services
     defaultDenyAccessPolicy: false
     # Enable tcp keep alive for all multi cluster destinations
     tcpKeepAlive:
-      enabled: true
+      enabled: false
       time: 4m
       interval: 1m
 
@@ -115,3 +115,22 @@ accessPolicies:
           name: frontend
           namespace: frontend
           cluster: cluster1
+
+trafficPolicies:
+- name: 
+  # sourceServices:
+  # - match:
+  #     namespaces:
+  #     - apps
+  #     labels:
+  #       service: wine
+  destinationServices:
+  - match:
+      namespaces:
+      - apps
+      labels:
+        service: wine
+  trafficShiftTo:
+    - virtualDestination:
+        name: backend
+        namespace: gloo-mesh
