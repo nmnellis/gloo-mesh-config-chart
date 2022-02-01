@@ -40,6 +40,31 @@ virtualDestinations:
 
 gateways:
   - name: some
+    # must match the ingress gateway kubernetes service port name
+    portName: http2
+    # select which istio ingress gateways this applies to
+    selectors:
+      - match:
+          labels:
+            istio: ingressgateway-frontend
+          namespaces:
+          - istio-system
+    hosts:
+      - domains:
+        - "nick.local"
+        match:
+        - matches:
+          - uri:
+              prefix: /frontend
+          destinations:
+            # - kubeService:
+            #     clusterName: cluster1
+            #     name: frontend
+            #     namespace: frontend
+            #     port: 80
+            - virtualDestination:      # proxy requests to the frontend VirtualDestination
+                name: frontend
+                namespace: gloo-mesh
 
 accessPolicies:
   - name: ingress-to-frontend

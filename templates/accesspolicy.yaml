@@ -30,7 +30,7 @@ spec:
 {{ .match.labels | toYaml | indent 8}}
       {{- end }}
       {{- if .match.clusters }}
-      clsuters:
+      clusters:
       {{- range .match.clusters }}
       - {{ . }}
       {{- end}}
@@ -38,10 +38,11 @@ spec:
   {{- end }}
   {{- end }}
   {{- if .exact }}
-  - kubeServiceRef:
-      name: {{ .exact.name }}
-      namespace: {{ .exact.namespace }}
-      cluster:  {{ .exact.cluster }}
+  - kubeServiceRefs:
+    - services:
+        name: {{ .exact.name }}
+        namespace: {{ .exact.namespace }}
+        cluster:  {{ .exact.cluster }}
   {{- end }}
   {{- end }}
 {{- end }}
