@@ -192,7 +192,7 @@ accessPolicies:
         - product-catalog
         labels:
           app: productcatalogservice
-  - name: checkout-to-upstreams
+  - name: recommendation-to-upstreams
     sourceServiceAccounts:
     - name: recommendation
       namespace: recommendation
