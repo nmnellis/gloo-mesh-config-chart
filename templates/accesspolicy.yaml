@@ -1,0 +1,47 @@
+{{- range .Values.accessPolicies }}
+apiVersion: networking.mesh.gloo.solo.io/v1
+kind: AccessPolicy
+metadata:
+  namespace: gloo-mesh
+  name: {{ .name }}
+spec:
+  sourceSelector:
+  - kubeServiceAccountRefs:
+      serviceAccounts:
+        - name: istio-ingressgateway-service-account
+          namespace: istio-system
+          clusterName: cluster1
+        - name: istio-ingressgateway-service-account
+          namespace: istio-system
+          clusterName: cluster2
+  destinationSelector:
+  {{- range .destinationServices }}
+  {{- if .match }}
+  {{- if or (.match.namespaces) (.match.labels) (.match.clusters) }}
+  - kubeServiceMatcher:
+      {{- if .match.namespaces }}
+      namespaces:
+      {{- range .match.namespaces }}
+      - {{ . }}
+      {{- end}}
+      {{- end}}
+      {{- if .match.labels }}
+      labels:
+{{ .match.labels | toYaml | indent 8}}
+      {{- end }}
+      {{- if .match.clusters }}
+      clsuters:
+      {{- range .match.clusters }}
+      - {{ . }}
+      {{- end}}
+      {{- end}}
+  {{- end }}
+  {{- end }}
+  {{- if .exact }}
+  - kubeServiceRef:
+      name: {{ .exact.name }}
+      namespace: {{ .exact.namespace }}
+      cluster:  {{ .exact.cluster }}
+  {{- end }}
+  {{- end }}
+{{- end }}

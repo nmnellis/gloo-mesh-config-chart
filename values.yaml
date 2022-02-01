@@ -40,3 +40,23 @@ virtualDestinations:
 
 gateways:
   - name: some
+
+accessPolicies:
+  - name: ingress-to-frontend
+    sourceServiceAccounts:
+      - name: istio-ingressgateway-service-account
+        namespace: istio-system
+        clusterName: cluster1
+      - name: istio-ingressgateway-service-account
+        namespace: istio-system
+        clusterName: cluster2
+    destinationServices:
+      - match:
+          namespaces:
+          - apps
+          labels:
+            service: wine
+      - exact:
+          name: frontend
+          namespace: frontend
+          cluster: cluster1
