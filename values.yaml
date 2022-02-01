@@ -70,7 +70,7 @@ virtualDestinations:
 #         namespace: frontend
 #         cluster: cluster1
 
-gateways:
+# gateways:
   # - name: some
   #   # must match the ingress gateway kubernetes service port name
   #   portName: http2
