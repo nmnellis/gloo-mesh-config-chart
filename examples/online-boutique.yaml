@@ -192,3 +192,17 @@ accessPolicies:
         - product-catalog
         labels:
           app: productcatalogservice
+  - name: checkout-to-upstreams
+    sourceServiceAccounts:
+    - name: recommendation
+      namespace: recommendation
+      clusterName: cluster1
+    - name: recommendation
+      namespace: recommendation
+      clusterName: cluster2
+    destinationServices:
+    - match:
+        namespaces:
+        - product-catalog
+        labels:
+          app: productcatalogservice
