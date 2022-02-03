@@ -1,3 +1,14 @@
 apiVersion: v1
-entries: {}
-generated: "2022-02-03T11:37:50.592140363-06:00"
+entries:
+  gloo-mesh-config:
+  - apiVersion: v2
+    appVersion: 1.2.12
+    created: "2022-02-03T11:42:25.100000494-06:00"
+    description: A Helm chart for Kubernetes
+    digest: acd1456936dbcfcafd0411da5c911de75f56b74de7245db07a1b96639db5b6e9
+    name: gloo-mesh-config
+    type: application
+    urls:
+    - gloo-mesh-config-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-02-03T11:42:25.099646773-06:00"
