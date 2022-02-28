@@ -1,0 +1,150 @@
+---
+# Source: gloo-mesh-config/templates/accesspolicy.yaml
+apiVersion: networking.mesh.gloo.solo.io/v1
+kind: AccessPolicy
+metadata:
+  namespace: gloo-mesh
+  name: ingressgateway-to-frontend
+spec:
+  sourceSelector:
+  - kubeServiceAccountRefs:
+      serviceAccounts:
+        - name: istio-ingressgateway-service-account
+          namespace: istio-system
+          clusterName: cluster1
+        - name: istio-ingressgateway-service-account
+          namespace: istio-system
+          clusterName: cluster2
+  destinationSelector:
+  - kubeServiceMatcher:
+      namespaces:
+      - bookinfo
+      labels:
+        service: productpage
+  - kubeServiceMatcher:
+      namespaces:
+      - bookinfo
+      labels:
+        service: reviews
+---
+# Source: gloo-mesh-config/templates/accesspolicy.yaml
+apiVersion: networking.mesh.gloo.solo.io/v1
+kind: AccessPolicy
+metadata:
+  namespace: gloo-mesh
+  name: reviews
+spec:
+  sourceSelector:
+  - kubeServiceAccountRefs:
+      serviceAccounts:
+        - name: bookinfo-reviews
+          namespace: default
+          clusterName: cluster1
+        - name: bookinfo-reviews
+          namespace: default
+          clusterName: cluster2
+  destinationSelector:
+  - kubeServiceMatcher:
+      namespaces:
+      - bookinfo
+      labels:
+        service: ratings
+---
+# Source: gloo-mesh-config/templates/accesspolicy.yaml
+apiVersion: networking.mesh.gloo.solo.io/v1
+kind: AccessPolicy
+metadata:
+  namespace: gloo-mesh
+  name: productpage
+spec:
+  sourceSelector:
+  - kubeServiceAccountRefs:
+      serviceAccounts:
+        - name: bookinfo-productpage
+          namespace: default
+          clusterName: cluster
+  destinationSelector:
+  - kubeServiceMatcher:
+      namespaces:
+      - bookinfo
+      labels:
+        service: details
+  - kubeServiceMatcher:
+      namespaces:
+      - bookinfo
+      labels:
+        service: reviews
+---
+# Source: gloo-mesh-config/templates/virtualdestination.yaml
+apiVersion: networking.enterprise.mesh.gloo.solo.io/v1beta1
+kind: VirtualDestination
+metadata:
+  name: reviews-global
+  namespace: gloo-mesh
+spec:
+  hostname: reviews.global
+  port:
+    number: 9080
+    protocol: http
+    targetName: http
+  localized:
+    outlierDetection:
+      consecutiveErrors: 2
+      interval: 5s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 100
+    destinationSelectors:
+    - kubeServiceMatcher:
+        labels:
+          service: reviews
+  virtualMesh:
+    name: gloo-mesh
+    namespace: gloo-mesh
+---
+# Source: gloo-mesh-config/templates/gateway.yaml
+apiVersion: networking.enterprise.mesh.gloo.solo.io/v1beta1
+kind: VirtualGateway
+metadata:
+  name: bookinfo-virtualgateway
+  namespace: gloo-mesh
+spec:
+  ingressGatewaySelectors:
+  - portName: http2
+    destinationSelectors:
+    - kubeServiceMatcher:
+        namespaces:
+        - istio-system
+        labels:
+          istio: ingressgateway
+  connectionHandlers:
+  - http:
+      routeConfig:
+      - virtualHost:
+          domains:
+          - "*"
+          routes:
+          - routeAction:
+              destinations:
+                - kubeService:
+                    clusterName: cluster1
+                    name: productpage
+                    namespace: default
+            matchers:
+              - uri:
+                  exact: /productpage
+              - uri:
+                  prefix: /static
+              - uri:
+                  exact: /login
+              - uri:
+                  exact: /logout
+              - uri:
+                  prefix: /api/v1/products
+          - routeAction:
+              destinations:
+                - virtualDestination:
+                    name: reviews-global
+                    namespace: gloo-mesh
+            matchers:
+              - uri:
+                  prefix: /reviews
