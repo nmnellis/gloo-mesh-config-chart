@@ -1,0 +1,22 @@
+{{- $iterations := .Values.iterations | int -}}
+{{- range $index0 := untilStep 1 (int $iterations) 1 }}
+---
+apiVersion: resilience.policy.gloo.solo.io/v2
+kind: OutlierDetectionPolicy
+metadata:
+  name: outlier-detection-soa-default
+  namespace: ns-{{ $index0 }}
+spec:
+  applyToDestinations:
+    - kind: VIRTUAL_DESTINATION
+      selector: {}
+  config:
+    baseEjectionTime: 30s
+    # TODO: There isn't a way to separate 5xx and gateway failures in this config.
+    # Apparently 0 does nothing too.
+    # Does not handle gateway failures differently from 5xx
+    consecutiveErrors: 0
+    consecutiveGatewayErrors: 5 # Not implemented yet. Not a %
+    interval: 10s
+    maxEjectionPercent: 50
+{{- end }}

@@ -1,0 +1,43 @@
+{{- $iterations := .Values.iterations | int -}}
+{{- range $index0 := untilStep 1 (int $iterations) 1 }}
+---
+apiVersion: resilience.policy.gloo.solo.io/v2
+kind: RetryTimeoutPolicy
+metadata:
+  name: default-indeed-retry
+  namespace: ns-{{ $index0 }}
+spec:
+  applyToRoutes:
+    - route:
+        labels:
+          route: default-route-with-retry # matches on route table route's labels
+  config:
+    requestTimeout: 15s
+    retries:
+      attempts: 3
+      perTryTimeout: 15s # Defaults to whatever envoy default is.
+      # retryOn specifies the conditions under which retry takes place. One or more policies can be specified using a ‘,’ delimited list.
+      retryOn: "connect-failure,refused-stream"
+      # retryRemoteLocalities specifies whether the retries should retry to other localities, will default to false
+      retryRemoteLocalities: true
+---
+apiVersion: resilience.policy.gloo.solo.io/v2
+kind: RetryTimeoutPolicy
+metadata:
+  name: idempotent-retry-policy
+  namespace: ns-{{ $index0 }}
+spec:
+  applyToRoutes:
+    - route:
+        labels:
+          route: default-5xx-retry # matches on route table route's labels
+  config:
+    requestTimeout: 15s
+    retries:
+      attempts: 3
+      perTryTimeout: 2s # Defaults to the route timeout
+      # retryOn specifies the conditions under which retry takes place. One or more policies can be specified using a ‘,’ delimited list.
+      retryOn: "connect-failure,refused-stream,gateway-error,reset"
+      # retryRemoteLocalities specifies whether the retries should retry to other localities, will default to false
+      retryRemoteLocalities: true
+{{- end }}

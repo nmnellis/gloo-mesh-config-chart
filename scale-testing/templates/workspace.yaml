@@ -1,0 +1,54 @@
+# Default one
+---
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: ops-team
+  namespace: ops-team
+spec:
+  options:
+    eastWestGateways:
+    - selector:
+        labels:
+          istio: eastwestgateway
+    serviceIsolation:
+      enabled: false
+      trimProxyConfig: false
+---
+# They will always create the workspaces before all the namespaces exist
+{{/* {{- range $index0 := untilStep 1 3000 1 }} */}}
+{{- $iterations := .Values.iterations | int -}}
+{{- range $index0 := untilStep 1 (int $iterations) 1 }}
+---
+apiVersion: admin.gloo.solo.io/v2
+kind: Workspace
+metadata:
+  name: ws-{{ $index0 }}
+  namespace: gloo-mesh
+spec:
+  workloadClusters:
+  - name: '*'
+    namespaces:
+    - name: ns-{{ $index0 }}
+---
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: settings
+  namespace: ws-{{ $index0 }}
+spec:
+# TODO figure out import/export relationships
+  # importFrom:
+  # - workspaces:
+  #   - name: backend-apis-team
+  # - workspaces:
+  #   - name: ops-team
+  # exportTo:
+  # - workspaces:
+  #   - name: '*'
+  options:
+    eastWestGateways:
+    - selector:
+        labels:
+          istio: eastwestgateway
+{{- end }}

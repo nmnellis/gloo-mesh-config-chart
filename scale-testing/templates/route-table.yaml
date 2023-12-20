@@ -1,0 +1,239 @@
+{{- $iterations := .Values.iterations | int -}}
+{{- range $index0 := untilStep 1 (int $iterations) 1 }}
+---
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+ name: indeed-top-level-route-table
+ namespace: ns-{{ $index0 }}
+spec:
+ hosts:
+   - "*.grpc-mesh-{{ $index0 }}-gloo.service.mesh"
+ http:
+   - labels:
+       soa.indeed.com/route-table: top-level
+     delegate:
+       routeTables:
+         - labels:
+             soa.indeed.com/route-table: grpc-mesh-{{ $index0 }}
+       sortMethod: TABLE_WEIGHT
+ workloadSelectors:
+   - {}
+---
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: indeed-default-route-table
+  namespace: ns-{{ $index0 }}
+  labels:
+    soa.indeed.com/route-table: grpc-mesh-{{ $index0 }}
+spec:
+  hosts:
+    - "infra.grpc-mesh-{{ $index0 }}-gloo.service.mesh"
+  http:
+    - labels:
+        route: default-5xx-retry
+      matchers:
+        - headers:
+            - name: "X-Idempotency-Key"
+          port: 8080
+      forwardTo:
+        destinations:
+          - ref:
+              name: grpc-mesh-reference-service
+              namespace: grpc-mesh-reference-service-gloo--infra
+            kind: VIRTUAL_DESTINATION
+            port:
+              # TODO: port name doesn't work for some reason.
+              number: 8080
+            subset:
+              soa.indeed.com/isolated-env: infra
+    - forwardTo:
+        destinations:
+          - ref:
+              name: grpc-mesh-reference-service
+              namespace: grpc-mesh-reference-service-gloo--infra
+            kind: VIRTUAL_DESTINATION
+            port:
+              # TODO: port name doesn't work for some reason.
+              number: 8080
+            subset:
+              soa.indeed.com/isolated-env: infra
+      matchers:
+        - port: 8080
+      labels:
+        route: default-route-with-retry
+    - labels:
+        route: default-5xx-retry
+      matchers:
+        - headers:
+            - name: "X-Idempotency-Key"
+          port: 8083
+      forwardTo:
+        destinations:
+          - ref:
+              name: grpc-mesh-reference-service
+              namespace: grpc-mesh-reference-service-gloo--infra
+            kind: VIRTUAL_DESTINATION
+            port:
+              # TODO: port name doesn't work for some reason.
+              number: 8083
+            subset:
+              soa.indeed.com/isolated-env: infra
+    - forwardTo:
+        destinations:
+          - ref:
+              name: grpc-mesh-reference-service
+              namespace: grpc-mesh-reference-service-gloo--infra
+            kind: VIRTUAL_DESTINATION
+            port:
+              # TODO: port name doesn't work for some reason.
+              number: 8083
+            subset:
+              soa.indeed.com/isolated-env: infra
+      matchers:
+        - port: 8083
+      labels:
+        route: default-route-with-retry
+  workloadSelectors:
+    - {}
+---
+{{- $mods := mod $index0 15 | int -}}
+{{- if eq $mods 0}}
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: indeed-lemma-route-table
+  namespace: ns-{{ $index0 }}
+  labels:
+    soa.indeed.com/route-table: grpc-mesh-{{ $index0 }}
+spec:
+  hosts:
+    - "lemma.grpc-mesh-{{ $index0 }}-gloo.service.mesh"
+  http:
+    - labels:
+        route: lemma-5xx-retry
+      matchers:
+        - headers:
+            - name: "X-Idempotency-Key"
+            - name: ":authority"
+              value: "lemma.grpc-mesh-{{ $index0 }}-gloo.service.mesh:8080"
+          port: 8080
+      forwardTo:
+        destinations:
+          - ref:
+              name: default-virtual-destination
+              namespace: ns-{{ $index0 }}
+            kind: VIRTUAL_DESTINATION
+            port:
+              # TODO: port name doesn't work for some reason.
+              number: 8080
+            subset:
+              soa.indeed.com/isolated-env: lemma
+    - forwardTo:
+        destinations:
+          - ref:
+              name: default-virtual-destination
+              namespace: ns-{{ $index0 }}
+            kind: VIRTUAL_DESTINATION
+            port:
+              # TODO: port name doesn't work for some reason.
+              number: 8080
+            subset:
+              soa.indeed.com/isolated-env: lemma
+      matchers:
+        - port: 8080
+        - headers:
+          - name: ":authority"
+            value: "lemma.grpc-mesh-{{ $index0 }}-gloo.service.mesh:8080"
+      labels:
+        route: lemma-route-with-retry
+    - labels:
+        route: lemma-5xx-retry
+      matchers:
+        - headers:
+            - name: "X-Idempotency-Key"
+            - name: ":authority"
+              value: "lemma.grpc-mesh-{{ $index0 }}-gloo.service.mesh:8083"
+          port: 8083
+      forwardTo:
+        destinations:
+          - ref:
+              name: default-virtual-destination
+              namespace: ns-{{ $index0 }}
+            kind: VIRTUAL_DESTINATION
+            port:
+              # TODO: port name doesn't work for some reason.
+              number: 8083
+            subset:
+              soa.indeed.com/isolated-env: lemma
+    - forwardTo:
+        destinations:
+          - ref:
+              name: default-virtual-destination
+              namespace: ns-{{ $index0 }}
+            kind: VIRTUAL_DESTINATION
+            port:
+              # TODO: port name doesn't work for some reason.
+              number: 8083
+            subset:
+              soa.indeed.com/isolated-env: lemma
+      matchers:
+        - port: 8083
+        - headers:
+            - name: ":authority"
+              value: "lemma.grpc-mesh-{{ $index0 }}-gloo.service.mesh:8083"
+      labels:
+        route: lemma
+  workloadSelectors:
+    - {}
+{{- end }}
+
+{{- if $.Values.zonesAndPools.zones }}
+---
+##
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: indeed-zones-pools-route-table
+  namespace: ns-{{ $index0 }}
+  labels:
+    soa.indeed.com/route-table: grpc-mesh-{{ $index0 }}
+spec:
+  hosts:
+    - "infra.grpc-mesh-{{ $index0 }}-gloo.service.mesh"
+  http:
+{{- range $zones := $.Values.zonesAndPools.zones }}
+    - labels:
+        route: default-5xx-retry
+      matchers:
+        - headers:
+            - name: "X-Idempotency-Key"
+          port: 8083
+      forwardTo:
+        destinations:
+          - ref:
+              name: grpc-mesh-reference-service
+              namespace: grpc-mesh-reference-service-gloo--infra
+            kind: VIRTUAL_DESTINATION
+            port:
+              # TODO: port name doesn't work for some reason.
+              number: 8083
+    - forwardTo:
+        destinations:
+          - ref:
+              name: grpc-mesh-reference-service
+              namespace: grpc-mesh-reference-service-gloo--infra
+            kind: VIRTUAL_DESTINATION
+            port:
+              # TODO: port name doesn't work for some reason.
+              number: 8083
+      matchers:
+        - port: 8083
+      labels:
+        route: default-route-with-retry
+{{- end }}
+  workloadSelectors:
+    - {}
+{{- end }}
+{{- end }}

@@ -1,0 +1,92 @@
+{{- $iterations := .Values.iterations | int -}}
+{{- range $index0 := untilStep 1 (int $iterations) 1 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-{{ $index0 }}
+  namespace: ns-{{ $index0 }}
+  labels:
+    app: app-{{ $index0 }}
+    soa.indeed.com/isolated-env: infra
+spec:
+  replicas: {{ $.Values.deployments.replicas }}
+  selector:
+    matchLabels:
+      app: app-{{ $index0 }}
+      soa.indeed.com/isolated-env: infra
+  template:
+    metadata:
+      labels:
+        app: app-{{ $index0 }}
+        soa.indeed.com/isolated-env: infra
+    spec:
+      serviceAccountName: app-{{ $index0 }}
+      securityContext:
+        runAsUser: 65534
+        runAsGroup: 65534
+      containers:
+      - name: main
+        image: gcr.io/istio-release/app:1.19.3
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: grpc
+          containerPort: 8083
+        args:
+          - --port
+          - "8080"
+          - --grpc
+          - "8083"
+          - --version
+          - v1
+          - --cluster
+          - cluster-1
+{{- $mods := mod $index0 15 | int -}}
+{{- if eq $mods 0}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-{{ $index0 }}-lemma
+  namespace: ns-{{ $index0 }}
+  labels:
+    app: app-{{ $index0 }}
+    soa.indeed.com/isolated-env: lemma
+spec:
+  replicas: {{ $.Values.deployments.replicas }}
+  selector:
+    matchLabels:
+      app: app-{{ $index0 }}
+      soa.indeed.com/isolated-env: lemma
+  template:
+    metadata:
+      labels:
+        app: app-{{ $index0 }}
+        soa.indeed.com/isolated-env: lemma
+    spec:
+      serviceAccountName: app-{{ $index0 }}
+      securityContext:
+        runAsUser: 65534
+        runAsGroup: 65534
+      containers:
+      - name: main
+        image: gcr.io/istio-release/app:1.19.3
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: grpc
+          containerPort: 8083
+        args:
+          - --port
+          - "8080"
+          - --grpc
+          - "8083"
+          - --version
+          - v1
+          - --cluster
+          - cluster-1
+{{- end }}
+{{- end }}

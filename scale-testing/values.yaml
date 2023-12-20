@@ -1,1 +1,14 @@
 iterations: 100
+
+deployments:
+  replicas: 0
+
+zonesAndPools:
+  zones:
+  - zone:
+      name: a
+  - zone:
+      name: b
+      pools:
+      - pool: a
+      - pool: b

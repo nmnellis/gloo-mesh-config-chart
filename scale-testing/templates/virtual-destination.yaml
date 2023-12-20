@@ -1,0 +1,26 @@
+{{- $iterations := .Values.iterations | int -}}
+{{- range $index0 := untilStep 1 (int $iterations) 1 }}
+---
+apiVersion: networking.gloo.solo.io/v2
+kind: VirtualDestination
+metadata:
+ name: default-virtual-destination
+ namespace: ns-{{ $index0 }}
+spec:
+ hosts:
+   - "infra.grpc-mesh-{{ $index0 }}-gloo.service.mesh"
+   - "lemma.grpc-mesh-{{ $index0 }}-gloo.service.mesh"
+ ports:
+   - number: 8080
+     protocol: HTTP
+     targetPort:
+       name: http
+   - number: 8083
+     protocol: GRPC
+     targetPort:
+       name: grpc
+ services:
+   - name: app-{{ $index0 }}
+     namespace: ns-{{ $index0 }}
+    #  cluster: awscmhdev
+{{- end }}

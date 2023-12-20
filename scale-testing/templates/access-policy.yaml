@@ -1,0 +1,20 @@
+{{- $iterations := .Values.iterations | int -}}
+{{- range $index0 := untilStep 1 (int $iterations) 1 }}
+---
+## TODO Add correct configuration for this. 
+## PERMISSIVE MODE FOR 8080
+## STRICT FOR 8083 with workspace boundaries
+apiVersion: security.policy.gloo.solo.io/v2
+kind: AccessPolicy
+metadata:
+  name: productpage-destination
+  namespace: ns-{{ $index0 }}
+spec:
+  applyToDestinations:
+  - selector:
+      labels:
+        app: app-{{ $index0 }}
+  config:
+    authn:
+      tlsMode: DISABLE
+{{- end }}

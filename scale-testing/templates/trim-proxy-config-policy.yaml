@@ -1,0 +1,19 @@
+## TODO needs import/export and any other config missed
+{{- $iterations := .Values.iterations | int -}}
+{{- range $index0 := untilStep 1 (int $iterations) 1 }}
+---
+apiVersion: resilience.policy.gloo.solo.io/v2
+kind: TrimProxyConfigPolicy
+metadata:
+  name: trim-proxy-policy
+  namespace: ns-{{ $index0 }}
+spec:
+  # all services in the workspace can discover each other
+  applyToWorkloads:
+    - selector:
+        workspace: ws-{{ $index0 }}
+  config:
+    includedDestinations:
+    - selector:
+        workspace: ws-{{ $index0 }}
+{{- end }}

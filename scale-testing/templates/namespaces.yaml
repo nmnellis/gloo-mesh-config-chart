@@ -1,5 +1,8 @@
+# create all the namespaces because we will create workspaces for them
+{{/*  {{- range $index0 := untilStep 1 3000 1 }} */}}
 {{- $iterations := .Values.iterations | int -}}
 {{- range $index0 := untilStep 1 (int $iterations) 1 }}
+---
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -7,5 +10,4 @@ metadata:
     istio-injection: enabled
   name: ns-{{ $index0 }}
 spec: {}
----
 {{- end }}
