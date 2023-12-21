@@ -4,18 +4,18 @@
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
- name: indeed-top-level-route-table
+ name: solo-top-level-route-table
  namespace: ns-{{ $index0 }}
 spec:
  hosts:
    - "*.grpc-mesh-{{ $index0 }}-gloo.service.mesh"
  http:
    - labels:
-       soa.indeed.com/route-table: top-level
+       soa.solo.com/route-table: top-level
      delegate:
        routeTables:
          - labels:
-             soa.indeed.com/route-table: grpc-mesh-{{ $index0 }}
+             soa.solo.com/route-table: grpc-mesh-{{ $index0 }}
        sortMethod: TABLE_WEIGHT
  workloadSelectors:
    - {}
@@ -23,10 +23,10 @@ spec:
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
-  name: indeed-default-route-table
+  name: solo-default-route-table
   namespace: ns-{{ $index0 }}
   labels:
-    soa.indeed.com/route-table: grpc-mesh-{{ $index0 }}
+    soa.solo.com/route-table: grpc-mesh-{{ $index0 }}
 spec:
   hosts:
     - "infra.grpc-mesh-{{ $index0 }}-gloo.service.mesh"
@@ -47,7 +47,7 @@ spec:
               # TODO: port name doesn't work for some reason.
               number: 8080
             subset:
-              soa.indeed.com/isolated-env: infra
+              soa.solo.com/isolated-env: infra
     - forwardTo:
         destinations:
           - ref:
@@ -58,7 +58,7 @@ spec:
               # TODO: port name doesn't work for some reason.
               number: 8080
             subset:
-              soa.indeed.com/isolated-env: infra
+              soa.solo.com/isolated-env: infra
       matchers:
         - port: 8080
       labels:
@@ -79,7 +79,7 @@ spec:
               # TODO: port name doesn't work for some reason.
               number: 8083
             subset:
-              soa.indeed.com/isolated-env: infra
+              soa.solo.com/isolated-env: infra
     - forwardTo:
         destinations:
           - ref:
@@ -90,7 +90,7 @@ spec:
               # TODO: port name doesn't work for some reason.
               number: 8083
             subset:
-              soa.indeed.com/isolated-env: infra
+              soa.solo.com/isolated-env: infra
       matchers:
         - port: 8083
       labels:
@@ -103,10 +103,10 @@ spec:
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
-  name: indeed-lemma-route-table
+  name: solo-lemma-route-table
   namespace: ns-{{ $index0 }}
   labels:
-    soa.indeed.com/route-table: grpc-mesh-{{ $index0 }}
+    soa.solo.com/route-table: grpc-mesh-{{ $index0 }}
 spec:
   hosts:
     - "lemma.grpc-mesh-{{ $index0 }}-gloo.service.mesh"
@@ -129,7 +129,7 @@ spec:
               # TODO: port name doesn't work for some reason.
               number: 8080
             subset:
-              soa.indeed.com/isolated-env: lemma
+              soa.solo.com/isolated-env: lemma
     - forwardTo:
         destinations:
           - ref:
@@ -140,7 +140,7 @@ spec:
               # TODO: port name doesn't work for some reason.
               number: 8080
             subset:
-              soa.indeed.com/isolated-env: lemma
+              soa.solo.com/isolated-env: lemma
       matchers:
         - port: 8080
         - headers:
@@ -166,7 +166,7 @@ spec:
               # TODO: port name doesn't work for some reason.
               number: 8083
             subset:
-              soa.indeed.com/isolated-env: lemma
+              soa.solo.com/isolated-env: lemma
     - forwardTo:
         destinations:
           - ref:
@@ -177,7 +177,7 @@ spec:
               # TODO: port name doesn't work for some reason.
               number: 8083
             subset:
-              soa.indeed.com/isolated-env: lemma
+              soa.solo.com/isolated-env: lemma
       matchers:
         - port: 8083
         - headers:
@@ -195,10 +195,10 @@ spec:
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
-  name: indeed-zones-pools-route-table
+  name: solo-zones-pools-route-table
   namespace: ns-{{ $index0 }}
   labels:
-    soa.indeed.com/route-table: grpc-mesh-{{ $index0 }}
+    soa.solo.com/route-table: grpc-mesh-{{ $index0 }}
 spec:
   hosts:
     - "infra.grpc-mesh-{{ $index0 }}-gloo.service.mesh"

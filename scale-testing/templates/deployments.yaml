@@ -8,18 +8,18 @@ metadata:
   namespace: ns-{{ $index0 }}
   labels:
     app: app-{{ $index0 }}
-    soa.indeed.com/isolated-env: infra
+    soa.solo.com/isolated-env: infra
 spec:
   replicas: {{ $.Values.deployments.replicas }}
   selector:
     matchLabels:
       app: app-{{ $index0 }}
-      soa.indeed.com/isolated-env: infra
+      soa.solo.com/isolated-env: infra
   template:
     metadata:
       labels:
         app: app-{{ $index0 }}
-        soa.indeed.com/isolated-env: infra
+        soa.solo.com/isolated-env: infra
     spec:
       serviceAccountName: app-{{ $index0 }}
       securityContext:
@@ -53,18 +53,18 @@ metadata:
   namespace: ns-{{ $index0 }}
   labels:
     app: app-{{ $index0 }}
-    soa.indeed.com/isolated-env: lemma
+    soa.solo.com/isolated-env: lemma
 spec:
   replicas: {{ $.Values.deployments.replicas }}
   selector:
     matchLabels:
       app: app-{{ $index0 }}
-      soa.indeed.com/isolated-env: lemma
+      soa.solo.com/isolated-env: lemma
   template:
     metadata:
       labels:
         app: app-{{ $index0 }}
-        soa.indeed.com/isolated-env: lemma
+        soa.solo.com/isolated-env: lemma
     spec:
       serviceAccountName: app-{{ $index0 }}
       securityContext:

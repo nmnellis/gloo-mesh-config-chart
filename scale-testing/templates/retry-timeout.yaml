@@ -4,7 +4,7 @@
 apiVersion: resilience.policy.gloo.solo.io/v2
 kind: RetryTimeoutPolicy
 metadata:
-  name: default-indeed-retry
+  name: default-solo-retry
   namespace: ns-{{ $index0 }}
 spec:
   applyToRoutes:

@@ -10,7 +10,7 @@ spec:
   applyToRoutes:
   - route:
       labels:
-        soa.indeed.com/route-table: top-level
+        soa.solo.com/route-table: top-level
   config:
     appendRequestHeaders:
       x-custom-request: bookinfo
